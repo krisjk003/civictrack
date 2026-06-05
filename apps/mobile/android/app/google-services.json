@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "294025925697",
+    "project_id": "civictrack-b98b3",
+    "storage_bucket": "civictrack-b98b3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294025925697:android:787d0e2b876e8d181a62c0",
+        "android_client_info": {
+          "package_name": "com.example.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "294025925697-2t1165dariric8aajbphat1dc42qo53n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBGNadpwElTAtiEgTyeZ2eR-qFV41lei8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "294025925697-2t1165dariric8aajbphat1dc42qo53n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
