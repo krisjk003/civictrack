@@ -4,6 +4,8 @@ import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
+
+
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
