@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
-import { signOut } from "firebase/auth";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
-import {collection, onSnapshot, doc, updateDoc} from "firebase/firestore";
+import {collection, onSnapshot, getDoc, doc, updateDoc} from "firebase/firestore";
 import { useEffect } from "react";
 import { db } from "../firebase";
-
 
 type HazardStatus =
   | "Pending"
@@ -50,6 +49,36 @@ function Dashboard() {
     }
   };
 
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [profileComplete, setProfileComplete] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      const adminDoc = await getDoc(
+        doc(db, "admins", user.uid)
+      );
+
+      if (adminDoc.exists()) {
+        setIsAdmin(true);
+
+        const adminData = adminDoc.data();
+
+        const complete =
+          adminData.profileCompleted === true
+
+        setProfileComplete(complete);
+      }
+    });
+
+
+    return unsubscribe;
+  }, []);
+  
   const [hazards , setHazards]= useState<Hazard[]>([]);
 
 
@@ -108,7 +137,25 @@ function Dashboard() {
   const [selectedHazard, setSelectedHazard] = useState<Hazard | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
 
+  if (isAdmin && !profileComplete) {
+    return (
+      <div className="complete-profile">
+        <h1>Complete Your Profile</h1>
 
+        <p>
+          Please complete your administrative profile
+          before accessing CivicTrack.
+        </p>
+
+        <button
+          onClick={() => navigate("/admin-profile")}
+        >
+          Complete Profile
+        </button>
+      </div>
+    );
+  }
+  
   return (
     <>
     <div className="dashboard">
@@ -177,18 +224,28 @@ function Dashboard() {
 
                 <td>{item.reportCount}</td>
 
+
                 <td>
-                  <select
-                    value={item.status}
-                    onChange={(e) =>
-                      handleStatusChange(item.id, e.target.value as HazardStatus)
-                    }
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Resolved">Resolved</option>
-                  </select>
+                  {isAdmin ? (
+                    <select
+                      value={item.status}
+                      onChange={(e) =>
+                        handleStatusChange(
+                          item.id,
+                          e.target.value as HazardStatus
+                        )
+                      }
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Resolved">Resolved</option>
+                    </select>
+                  ) : (
+                    item.status
+                  )}
                 </td>
+
+
 
                 <td>
                   <a
