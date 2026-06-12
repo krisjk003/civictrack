@@ -14,7 +14,7 @@ export interface DashboardStats {
 
 export class AdminService {
   private get complaintsCollection() {
-    return firestore.collection(Collections.COMPLAINTS);
+    return firestore.collection(Collections.HAZARDS);
   }
 
   private get usersCollection() {
