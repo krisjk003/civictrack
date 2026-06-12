@@ -211,15 +211,19 @@ export default function Login() {
           Continue with Google
         </button>
 
-        <button
-          className="register-btn"
-          onClick={() => navigate("/register")}
-        >
-          Create New Account
-        </button>
+        <div className="register-section">
+          <span>Don't have an account?</span>
+
+          <button
+            className="register-link"
+            onClick={() => navigate("/register")}
+          >
+            Create Account
+          </button>
+        </div>
 
         <p className="footer">
-          Access restricted to authorized administrators only.
+          Report hazards, track updates, and manage civic issues.
         </p>
       </div>
     </div>

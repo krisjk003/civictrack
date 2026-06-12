@@ -279,138 +279,139 @@ export default function AdminProfile() {
     <div className="admin-profile-page">
         <div className="profile-card">
         <h1>Complete Admin Profile</h1>
+        <div className="form-grid">
+            <div className="form-group">
+                <label>Name</label>
+                <input
+                type="text"
+                value={name}
+                onChange={(e) =>
+                    setName(e.target.value)
+                }
+                />
+            </div>
 
-        <div className="form-group">
-            <label>Name</label>
-            <input
-            type="text"
-            value={name}
-            onChange={(e) =>
-                setName(e.target.value)
-            }
-            />
-        </div>
+            <div className="form-group">
+                <label>Email</label>
+                <input
+                type="text"
+                value={email}
+                disabled
+                />
+            </div>
 
-        <div className="form-group">
-            <label>Email</label>
-            <input
-            type="text"
-            value={email}
-            disabled
-            />
-        </div>
+            <div className="form-group">
+                <label>Phone</label>
+                <input
+                type="text"
+                value={phone}
+                onChange={(e) =>
+                    setPhone(e.target.value)
+                }
+                />
+            </div>
 
-        <div className="form-group">
-            <label>Phone</label>
-            <input
-            type="text"
-            value={phone}
-            onChange={(e) =>
-                setPhone(e.target.value)
-            }
-            />
-        </div>
+            <div className="form-group">
+            <label>Department</label>
 
-        <div className="form-group">
-        <label>Department</label>
-
-        <select
-            value={department}
-            onChange={(e) =>
-            setDepartment(e.target.value)
-            }
-        >
-            <option value="">
-            Select Department
-            </option>
-
-            {departments.map((dept) => (
-            <option
-                key={dept}
-                value={dept}
+            <select
+                value={department}
+                onChange={(e) =>
+                setDepartment(e.target.value)
+                }
             >
-                {dept}
-            </option>
-            ))}
-        </select>
-        </div>
-
-        <div className="form-group">
-        <label>State</label>
-
-        <select
-            value={state}
-            onChange={(e) => {
-            setState(e.target.value);
-            setDistrict("");
-            setLocality("");
-            }}
-        >
-            <option value="">
-            Select State
-            </option>
-
-            {states.map((s) => (
-            <option
-                key={s}
-                value={s}
-            >
-                {s}
-            </option>
-            ))}
-        </select>
-        </div>
-
-        <div className="form-group">
-        <label>District</label>
-
-        <select
-            value={district}
-            onChange={(e) => {
-            setDistrict(e.target.value);
-            setLocality("");
-            }}
-        >
-            <option value="">
-            Select District
-            </option>
-
-            {districts.map((d) => (
-            <option
-                key={d}
-                value={d}
-            >
-                {d}
-            </option>
-            ))}
-        </select>
-        </div>
-
-        <div className="form-group">
-        <label>Locality (Taluk)</label>
-
-        <select
-            value={locality}
-            onChange={(e) =>
-            setLocality(e.target.value)
-            }
-            disabled={!district}
-        >
-            <option value="">
-            Select Taluk
-            </option>
-
-            {(districtTaluks[district] || []).map(
-            (taluk) => (
-                <option
-                key={taluk}
-                value={taluk}
-                >
-                {taluk}
+                <option value="">
+                Select Department
                 </option>
-            )
-            )}
-        </select>
+
+                {departments.map((dept) => (
+                <option
+                    key={dept}
+                    value={dept}
+                >
+                    {dept}
+                </option>
+                ))}
+            </select>
+            </div>
+
+            <div className="form-group">
+            <label>State</label>
+
+            <select
+                value={state}
+                onChange={(e) => {
+                setState(e.target.value);
+                setDistrict("");
+                setLocality("");
+                }}
+            >
+                <option value="">
+                Select State
+                </option>
+
+                {states.map((s) => (
+                <option
+                    key={s}
+                    value={s}
+                >
+                    {s}
+                </option>
+                ))}
+            </select>
+            </div>
+
+            <div className="form-group">
+            <label>District</label>
+
+            <select
+                value={district}
+                onChange={(e) => {
+                setDistrict(e.target.value);
+                setLocality("");
+                }}
+            >
+                <option value="">
+                Select District
+                </option>
+
+                {districts.map((d) => (
+                <option
+                    key={d}
+                    value={d}
+                >
+                    {d}
+                </option>
+                ))}
+            </select>
+            </div>
+
+            <div className="form-group">
+            <label>Locality (Taluk)</label>
+
+            <select
+                value={locality}
+                onChange={(e) =>
+                setLocality(e.target.value)
+                }
+                disabled={!district}
+            >
+                <option value="">
+                Select Taluk
+                </option>
+
+                {(districtTaluks[district] || []).map(
+                (taluk) => (
+                    <option
+                    key={taluk}
+                    value={taluk}
+                    >
+                    {taluk}
+                    </option>
+                )
+                )}
+            </select>
+            </div>
         </div>
 
         <button

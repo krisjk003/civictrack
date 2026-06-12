@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
-import {collection, onSnapshot, getDoc, doc, updateDoc} from "firebase/firestore";
+import {collection, onSnapshot, getDoc, doc, updateDoc, Timestamp} from "firebase/firestore";
 import { useEffect } from "react";
 import { db } from "../firebase";
+
 
 type HazardStatus =
   | "Pending"
@@ -23,6 +24,7 @@ type Hazard = {
   basePriority: number;
   displayPriority: number;
   status: HazardStatus;
+  reportedOn: Timestamp;
 };
 
 function Dashboard() {
@@ -51,6 +53,7 @@ function Dashboard() {
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [profileComplete, setProfileComplete] = useState(false);
+  const [checkingAdmin, setCheckingAdmin] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -73,11 +76,13 @@ function Dashboard() {
 
         setProfileComplete(complete);
       }
+      setCheckingAdmin(false);
     });
-
+    
 
     return unsubscribe;
   }, []);
+  
   
   const [hazards , setHazards]= useState<Hazard[]>([]);
 
@@ -121,6 +126,7 @@ function Dashboard() {
               hazard.basePriority +
               Math.min(hazard.reportCount || 0, 20),
             status: hazard.status as HazardStatus,
+            reportedOn: hazard.reportedOn,
           };
         });
 
@@ -136,6 +142,10 @@ function Dashboard() {
 
   const [selectedHazard, setSelectedHazard] = useState<Hazard | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
+
+  if (checkingAdmin) {
+    return <h2>Loading...</h2>;
+  }
 
   if (isAdmin && !profileComplete) {
     return (
@@ -176,7 +186,6 @@ function Dashboard() {
         ))}
       </div>
 
-
       <div className="hazards-section">
         <h2>Priority Hazards</h2>
 
@@ -187,6 +196,7 @@ function Dashboard() {
               <th>Hazard</th>
               <th>Description</th>
               <th>Reports</th>
+              <th>Reported On</th>
               <th>Status</th>
               <th>Location</th>
             </tr>
@@ -197,7 +207,11 @@ function Dashboard() {
             .sort((a,b) => b.displayPriority - a.displayPriority)
             .map((item , index) => (
               <tr key={item.id}>
-                <td>{index + 1}</td>
+              <td>
+                <div className="priority-rank">
+                  {index + 1}
+                </div>
+              </td>
 
                 <td>
                   <div className="hazard-title-wrapper">
@@ -211,12 +225,14 @@ function Dashboard() {
                       {item.title}
                     </span>
 
-                    <div className="hover-preview">
-                      <img
-                        src={item.photos[0]}
-                        alt={item.title}
-                      />
-                    </div>
+                    {item.photos.length > 0 && (
+                      <div className="hover-preview">
+                        <img
+                          src={item.photos[0]}
+                          alt={item.title}
+                        />
+                      </div>
+                    )}
                   </div>
                 </td>
 
@@ -224,10 +240,21 @@ function Dashboard() {
 
                 <td>{item.reportCount}</td>
 
-
+                <td>
+                  {item.reportedOn
+                    ?.toDate()
+                    .toLocaleString()}
+                </td>
                 <td>
                   {isAdmin ? (
                     <select
+                      className={`status-select ${
+                        item.status === "Pending"
+                          ? "pending"
+                          : item.status === "In Progress"
+                          ? "progress"
+                          : "resolved"
+                      }`}
                       value={item.status}
                       onChange={(e) =>
                         handleStatusChange(
@@ -241,7 +268,17 @@ function Dashboard() {
                       <option value="Resolved">Resolved</option>
                     </select>
                   ) : (
-                    item.status
+                    <span
+                      className={`status-badge ${
+                        item.status === "Pending"
+                          ? "pending"
+                          : item.status === "In Progress"
+                          ? "progress"
+                          : "resolved"
+                      }`}
+                    >
+                      {item.status}
+                    </span>
                   )}
                 </td>
 

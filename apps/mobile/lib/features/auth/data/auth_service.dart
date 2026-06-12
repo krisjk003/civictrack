@@ -91,12 +91,8 @@ class AuthService {
 
     if (!doc.exists) {
       await docRef.set({
-        'uid': user.uid,
         'email': user.email ?? '',
         'name': displayName,
-        'role': 'citizen',
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
       });
     }
   }
