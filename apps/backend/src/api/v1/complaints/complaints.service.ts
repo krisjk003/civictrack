@@ -38,7 +38,7 @@ export interface ListComplaintsOptions {
 
 export class ComplaintsService {
   private get collection() {
-    return firestore.collection(Collections.COMPLAINTS);
+    return firestore.collection(Collections.HAZARDS);
   }
 
   async create(

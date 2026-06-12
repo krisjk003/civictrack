@@ -6,7 +6,7 @@
  */
 export const Collections = {
   USERS: 'users',
-  COMPLAINTS: 'complaints',
+  HAZARDS: 'hazards',
   AUDIT_LOGS: 'audit_logs',
 } as const;
 

@@ -56,7 +56,7 @@ export async function authenticate(
         role: userData.role ?? UserRole.CITIZEN,
       };
     }
-
+    console.log("Authenticated user:", req.user);
     next();
   } catch (error: unknown) {
     if (error instanceof UnauthorizedError || error instanceof ForbiddenError) {
@@ -85,6 +85,7 @@ export async function authenticate(
 
     next(new UnauthorizedError('Authentication failed'));
   }
+  
 }
 
 /**
