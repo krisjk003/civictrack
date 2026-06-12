@@ -51,6 +51,7 @@ body {
   background: var(--background);
   color: var(--text);
   font-family: var(--sans);
+  caret-color: transparent;
 }
 
 /* Headings */
@@ -110,6 +111,7 @@ select,
 textarea {
   border: 1px solid var(--border);
   border-radius: 8px;
+  caret-color: auto;
 }
 
 input:focus,

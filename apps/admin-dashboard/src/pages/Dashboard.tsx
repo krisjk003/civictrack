@@ -3,15 +3,24 @@ import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
-import {collection, onSnapshot, getDoc, doc, updateDoc, Timestamp} from "firebase/firestore";
+import {collection, onSnapshot, getDoc, doc, Timestamp} from "firebase/firestore";
 import { useEffect } from "react";
 import { db } from "../firebase";
+import { API_URL } from "../config/api";
 
 
 type HazardStatus =
-  | "Pending"
-  | "In Progress"
-  | "Resolved";
+  | "pending"
+  | "in_progress"
+  | "resolved"
+  | "rejected";
+  
+const statusLabels: Record<HazardStatus, string> = {
+  pending: "Pending",
+  in_progress: "In Progress",
+  resolved: "Resolved",
+  rejected: "Rejected",
+};
 
 type Hazard = {
   id: string;
@@ -40,14 +49,39 @@ function Dashboard() {
     newStatus: HazardStatus
   ) => {
     try {
-      await updateDoc(
-        doc(db, "hazardReports", id),
+      const user = auth.currentUser;
+
+      if (!user) {
+        throw new Error("Not authenticated");
+      }
+
+      const token = await user.getIdToken();
+
+      const response = await fetch(
+        `${API_URL}/complaints/${id}/status`,
         {
-          status: newStatus
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+             status: newStatus,
+          }),
         }
       );
+
+      if (!response.ok) {
+        const errorText =
+          await response.text();
+
+        throw new Error(errorText);
+      }
     } catch (err) {
-      console.error(err);
+      console.error(
+        "Status update failed:",
+        err
+      );
     }
   };
 
@@ -94,21 +128,26 @@ function Dashboard() {
     },
     {
       title: "Pending",
-      value: hazards.filter(h => h.status === "Pending" ).length,
+      value: hazards.filter(h => h.status === "pending").length,
     },
     {
       title: "In Progress",
-      value: hazards.filter(h => h.status === "In Progress" ).length,
+      value: hazards.filter(h => h.status === "in_progress" ).length,
     },
     {
       title: "Resolved",
-      value: hazards.filter(h => h.status === "Resolved" ).length,
+      value: hazards.filter(h => h.status === "resolved" ).length,
     },
+    {
+      title: "Rejected",
+      value: hazards.filter(h => h.status === "rejected").length,
+    }
+
   ];
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      collection(db, "hazardReports"),
+      collection(db, "hazards"),
       (snapshot) => {
         const data: Hazard[] = snapshot.docs.map((doc) => {
           const hazard = doc.data();
@@ -249,11 +288,13 @@ function Dashboard() {
                   {isAdmin ? (
                     <select
                       className={`status-select ${
-                        item.status === "Pending"
+                        item.status === "pending"
                           ? "pending"
-                          : item.status === "In Progress"
+                          : item.status === "in_progress"
                           ? "progress"
-                          : "resolved"
+                          : item.status === "resolved"
+                          ? "resolved"
+                          : "rejected"
                       }`}
                       value={item.status}
                       onChange={(e) =>
@@ -263,21 +304,24 @@ function Dashboard() {
                         )
                       }
                     >
-                      <option value="Pending">Pending</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Resolved">Resolved</option>
+                      <option value="pending">Pending</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="resolved">Resolved</option>
+                      <option value="rejected">Rejected</option>
                     </select>
                   ) : (
                     <span
                       className={`status-badge ${
-                        item.status === "Pending"
+                        item.status === "pending"
                           ? "pending"
-                          : item.status === "In Progress"
+                          : item.status === "in_progress"
                           ? "progress"
-                          : "resolved"
+                          : item.status === "resolved"
+                          ? "resolved"
+                          : "rejected"
                       }`}
                     >
-                      {item.status}
+                      {statusLabels[item.status]}
                     </span>
                   )}
                 </td>

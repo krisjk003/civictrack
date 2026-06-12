@@ -259,6 +259,10 @@ color: #1e40af;
 background: #dcfce7;
 color: #166534;
 }
+.rejected {
+  background-color: #d32f2f;
+  color: white;
+}
 
 /* Gallery Modal */
 
