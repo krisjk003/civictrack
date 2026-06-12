@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import "./AdminProfile.css";
+import { API_URL } from "../config/api";
 
 export default function AdminProfile() {
     const navigate = useNavigate();
@@ -228,18 +229,27 @@ export default function AdminProfile() {
 
         if (!user) return;
 
-        await updateDoc(
-        doc(db, "admins", user.uid),
+        const token =
+        await user.getIdToken();
+
+        await fetch(
+        `${API_URL}/admin/profile`,
         {
+            method: "PUT",
+            headers: {
+            Authorization:
+                `Bearer ${token}`,
+            "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
             name,
             phone,
-
             department,
             state,
             district,
             locality,
-
-            profileCompleted: true,
+            }),
         }
         );
 
