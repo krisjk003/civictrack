@@ -5,11 +5,26 @@ import { adminController } from './admin.controller';
 import { authenticate, authorize } from '../../../middleware/auth.middleware';
 import { asyncHandler } from '../../../shared/utils/async-handler';
 import { UserRole } from '../../../shared/types/roles.types';
+import { validate } from '../../../middleware/validation.middleware';
+import { updateAdminProfileSchema } from './dto/update-admin-profile.dto';
 
 const router = Router();
 
 // All admin routes require authentication AND admin/moderator role
 router.use(authenticate, authorize(UserRole.ADMIN, UserRole.MODERATOR));
+
+router.put(
+  '/profile',
+  validate(
+    updateAdminProfileSchema,
+    'body'
+  ),
+  asyncHandler(
+    adminController
+      .updateProfile
+      .bind(adminController)
+  ),
+);
 
 /**
  * GET /api/v1/admin/dashboard-stats
@@ -19,5 +34,6 @@ router.get(
   '/dashboard-stats',
   asyncHandler(adminController.getDashboardStats.bind(adminController)),
 );
+
 
 export default router;

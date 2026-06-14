@@ -14,6 +14,22 @@ export class AdminController {
     const stats = await adminService.getDashboardStats();
     ApiResponse.success(res, stats, 'Dashboard statistics retrieved successfully');
   }
+  async updateProfile(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+
+    await adminService.updateProfile(
+      req.user!.uid,
+      req.body
+    );
+
+    ApiResponse.success(
+      res,
+      null,
+      "Profile updated successfully"
+    );
+  }
 }
 
 export const adminController = new AdminController();

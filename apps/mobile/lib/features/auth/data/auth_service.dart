@@ -93,6 +93,7 @@ class AuthService {
       await docRef.set({
         'email': user.email ?? '',
         'name': displayName,
+        'role': "citizen"
       });
     }
   }

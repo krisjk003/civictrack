@@ -2,6 +2,7 @@
 
 import { firestore } from '../../../config/firebase.config';
 import { Collections } from '../../../config/database.config';
+import { FieldValue } from "firebase-admin/firestore";
 
 export interface DashboardStats {
   totalComplaints: number;
@@ -19,6 +20,12 @@ export class AdminService {
 
   private get usersCollection() {
     return firestore.collection(Collections.USERS);
+  }
+
+  private get adminProfilesCollection() {
+    return firestore.collection(
+      Collections.ADMINS
+    );
   }
 
   /**
@@ -52,6 +59,38 @@ export class AdminService {
       totalUsers: usersSnap.data().count,
     };
   }
+  async updateProfile(
+    uid: string,
+    dto: {
+      name: string;
+      phone: string;
+      department: string;
+      state: string;
+      district: string;
+      locality: string;
+    }
+  ): Promise<void> {
+
+    await this.adminProfilesCollection
+      .doc(uid)
+      .set(
+        {
+          ...dto,
+          profileCompleted: true,
+        },
+        { merge: true }
+      );
+
+    await firestore
+      .collection(Collections.AUDIT_LOGS)
+      .add({
+        action: "admin.profile_updated",
+        userId: uid,
+        timestamp:
+          FieldValue.serverTimestamp(),
+      });
+  }
+
 }
 
 export const adminService = new AdminService();

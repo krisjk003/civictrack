@@ -7,6 +7,7 @@
 export const Collections = {
   USERS: 'users',
   HAZARDS: 'hazards',
+  ADMINS: 'admins',
   AUDIT_LOGS: 'audit_logs',
 } as const;
 
